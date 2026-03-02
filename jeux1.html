@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Nutrition - Testez vos connaissances alimentaires</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #FF9800;
+            --light: #f9f9f9;
+            --dark: #333;
+            --gray: #ddd;
+            --correct: #4CAF50;
+            --incorrect: #f44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #F57C00;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .quiz-container {
+            display: none;
+        }
+        
+        .question {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .options {
+            list-style: none;
+            margin: 20px 0;
+        }
+        
+        .option {
+            background-color: var(--light);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background-color: #e8f5e9;
+        }
+        
+        .option.correct {
+            background-color: #e8f5e9;
+            border-color: var(--correct);
+        }
+        
+        .option.incorrect {
+            background-color: #ffebee;
+            border-color: var(--incorrect);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: var(--gray);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .results-container {
+            display: none;
+            text-align: center;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        
+        .feedback {
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+        
+        .restart-btn {
+            margin-top: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quiz Nutrition</h1>
+            <p class="subtitle">Testez vos connaissances sur l'alimentation et la nutrition</p>
+        </header>
+        
+        <div id="welcome-screen" class="card">
+            <h2>Bienvenue au Quiz Nutrition</h2>
+            <p>Découvrez vos connaissances sur l'alimentation saine, les nutriments essentiels et les bonnes pratiques nutritionnelles.</p>
+            <p>Choisissez une catégorie pour commencer :</p>
+            
+            <div class="category-grid">
+                <div class="category-card" data-category="nutriments">
+                    <div class="category-icon">🥑</div>
+                    <h3>Nutriments Essentiels</h3>
+                </div>
+                <div class="category-card" data-category="regimes">
+                    <div class="category-icon">🥗</div>
+                    <h3>Régimes Alimentaires</h3>
+                </div>
+                <div class="category-card" data-category="sante">
+                    <div class="category-icon">❤️</div>
+                    <h3>Alimentation & Santé</h3>
+                </div>
+                <div class="category-card" data-category="mythes">
+                    <div class="category-icon">❓</div>
+                    <h3>Mythes Nutritionnels</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div id="quiz-container" class="quiz-container">
+            <div class="card">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+                <h2 id="category-title">Catégorie</h2>
+                <div class="question" id="question">Question</div>
+                <ul class="options" id="options">
+                    <!-- Les options seront ajoutées dynamiquement -->
+                </ul>
+                <div class="navigation">
+                    <button class="btn" id="prev-btn">Précédent</button>
+                    <button class="btn" id="next-btn">Suivant</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results-container" class="results-container card">
+            <h2>Résultats du Quiz</h2>
+            <div class="score" id="score">0/10</div>
+            <div class="feedback" id="feedback"></div>
+            <button class="btn restart-btn" id="restart-btn">Recommencer le Quiz</button>
+        </div>
+        
+        <footer>
+            <p>Quiz Nutrition - Testez et améliorez vos connaissances alimentaires</p>
+        </footer>
+    </div>
+
+    <script>
+        // Données des questions par catégorie
+        const quizData = {
+            nutriments: {
+                title: "Nutriments Essentiels",
+                questions: [
+                    {
+                        question: "Quelle vitamine est principalement obtenue par exposition au soleil?",
+                        options: ["Vitamine A", "Vitamine C", "Vitamine D", "Vitamine K"],
+                        answer: 2
+                    },
+                    {
+                        question: "Quel minéral est essentiel pour la formation des globules rouges?",
+                        options: ["Calcium", "Fer", "Potassium", "Magnésium"],
+                        answer: 1
+                    },
+                    {
+                        question: "Quelle est la principale fonction des glucides dans l'organisme?",
+                        options: ["Construire les muscles", "Fournir de l'énergie", "Renforcer les os", "Transport de l'oxygène"],
+                        answer: 1
+                    },
+                    {
+                        question: "Quelle vitamine est importante pour la coagulation du sang?",
+                        options: ["Vitamine A", "Vitamine B12", "Vitamine C", "Vitamine K"],
+                        answer: 3
+                    },
+                    {
+                        question: "Quel type de graisse est considéré comme le plus sain?",
+                        options: ["Graisses saturées", "Graisses trans", "Graisses insaturées", "Graisses hydrogénées"],
+                        answer: 2
+                    }
+                ]
+            },
+            regimes: {
+                title: "Régimes Alimentaires",
+                questions: [
+                    {
+                        question: "Quel régime met l'accent sur les aliments d'origine végétale?",
+                        options: ["Régime cétogène", "Régime végétalien", "Régime paléo", "Régime méditerranéen"],
+                        answer: 1
+                    },
+                    {
+                        question: "Le régime méditerranéen est riche en:",
+                        options: ["Viande rouge", "Produits laitiers", "Huile d'olive", "Aliments transformés"],
+                        answer: 2
+                    },
+                    {
+                        question: "Quel régime élimine complètement les glucides?",
+                        options: ["Régime sans gluten", "Régime cétogène", "Régime flexitarien", "Régime DASH"],
+                        answer: 1
+                    },
+                    {
+                        question: "Lequel de ces régimes est souvent recommandé pour abaisser la tension artérielle?",
+                        options: ["Régime cétogène", "Régime DASH", "Régime paléo", "Régime Atkins"],
+                        answer: 1
+                    },
+                    {
+                        question: "Quel régime se concentre sur les aliments consommés par nos ancêtres chasseurs-cueilleurs?",
+                        options: ["Régime végétalien", "Régime paléo", "Régime méditerranéen", "Régime flexitarien"],
+                        answer: 1
+                    }
+                ]
+            },
+            sante: {
+                title: "Alimentation & Santé",
+                questions: [
+                    {
+                        question: "Quelle condition peut résulter d'une carence en vitamine C?",
+                        options: ["Rachitisme", "Scorbut", "Béribéri", "Anémie"],
+                        answer: 1
+                    },
+                    {
+                        question: "Quel aliment est riche en oméga-3, bons pour la santé cardiaque?",
+                        options: ["Beurre", "Saumon", "Fromage", "Pain blanc"],
+                        answer: 1
+                    },
+                    {
+                        question: "Quelle consommation excessive peut augmenter le risque d'ostéoporose?",
+                        options: ["Lait", "Sel", "Café", "Légumes verts"],
+                        answer: 2
+                    },
+                    {
+                        question: "Quel minéral est essentiel pour le bon fonctionnement de la thyroïde?",
+                        options: ["Fer", "Iode", "Calcium", "Zinc"],
+                        answer: 1
+                    },
+                    {
+                        question: "Quelle vitamine est importante pour la santé des yeux et la vision nocturne?",
+                        options: ["Vitamine A", "Vitamine B6", "Vitamine C", "Vitamine E"],
+                        answer: 0
+                    }
+                ]
+            },
+            mythes: {
+                title: "Mythes Nutritionnels",
+                questions: [
+                    {
+                        question: "Est-il vrai que tous les glucides font grossir?",
+                        options: ["Vrai", "Faux"],
+                        answer: 1
+                    },
+                    {
+                        question: "Les œufs augmentent-ils le cholestérol sanguin chez la plupart des gens?",
+                        options: ["Vrai", "Faux"],
+                        answer: 1
+                    },
+                    {
+                        question: "Les aliments biologiques sont-ils toujours plus nutritifs que les conventionnels?",
+                        options: ["Vrai", "Faux"],
+                        answer: 1
+                    },
+                    {
+                        question: "Doit-on boire 8 verres d'eau par jour?",
+                        options: ["Vrai, c'est une règle scientifique", "Faux, les besoins varient selon les individus"],
+                        answer: 1
+                    },
+                    {
+                        question: "Les régimes détox sont-ils nécessaires pour éliminer les toxines?",
+                        options: ["Vrai", "Faux, le corps le fait naturellement"],
+                        answer: 1
+                    }
+                ]
+            }
+        };
+
+        // Variables globales
+        let currentCategory = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+
+        // Éléments DOM
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const categoryTitle = document.getElementById('category-title');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const prevButton = document.getElementById('prev-btn');
+        const nextButton = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreElement = document.getElementById('score');
+        const feedbackElement = document.getElementById('feedback');
+        const restartButton = document.getElementById('restart-btn');
+        const categoryCards = document.querySelectorAll('.category-card');
+
+        // Événements
+        categoryCards.forEach(card => {
+            card.addEventListener('click', () => {
+                currentCategory = card.getAttribute('data-category');
+                startQuiz();
+            });
+        });
+
+        prevButton.addEventListener('click', showPreviousQuestion);
+        nextButton.addEventListener('click', showNextQuestion);
+        restartButton.addEventListener('click', restartQuiz);
+
+        // Fonctions
+        function startQuiz() {
+            welcomeScreen.style.display = 'none';
+            quizContainer.style.display = 'block';
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(quizData[currentCategory].questions.length).fill(null);
+            
+            categoryTitle.textContent = quizData[currentCategory].title;
+            showQuestion();
+            updateProgressBar();
+        }
+
+        function showQuestion() {
+            const question = quizData[currentCategory].questions[currentQuestionIndex];
+            questionElement.textContent = question.question;
+            
+            optionsElement.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const li = document.createElement('li');
+                li.className = 'option';
+                if (userAnswers[currentQuestionIndex] === index) {
+                    li.classList.add('selected');
+                }
+                li.textContent = option;
+                li.addEventListener('click', () => selectOption(index));
+                optionsElement.appendChild(li);
+            });
+            
+            // Gérer l'affichage des boutons de navigation
+            prevButton.style.display = currentQuestionIndex === 0 ? 'none' : 'inline-block';
+            
+            if (currentQuestionIndex === quizData[currentCategory].questions.length - 1) {
+                nextButton.textContent = 'Terminer';
+            } else {
+                nextButton.textContent = 'Suivant';
+            }
+        }
+
+        function selectOption(index) {
+            // Désélectionner toutes les options
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // Sélectionner l'option cliquée
+            options[index].classList.add('selected');
+            userAnswers[currentQuestionIndex] = index;
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex < quizData[currentCategory].questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+                updateProgressBar();
+            } else {
+                // Dernière question, afficher les résultats
+                calculateScore();
+                showResults();
+            }
+        }
+
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+                updateProgressBar();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / quizData[currentCategory].questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function calculateScore() {
+            score = 0;
+            quizData[currentCategory].questions.forEach((question, index) => {
+                if (userAnswers[index] === question.answer) {
+                    score++;
+                }
+            });
+        }
+
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            
+            scoreElement.textContent = `${score}/${quizData[currentCategory].questions.length}`;
+            
+            // Donner un feedback basé sur le score
+            const percentage = (score / quizData[currentCategory].questions.length) * 100;
+            if (percentage >= 80) {
+                feedbackElement.textContent = "Excellent! Vous avez de solides connaissances en nutrition!";
+            } else if (percentage >= 60) {
+                feedbackElement.textContent = "Bon travail! Vous avez de bonnes bases en nutrition.";
+            } else if (percentage >= 40) {
+                feedbackElement.textContent = "Pas mal! Vous avez quelques connaissances mais il y a place à amélioration.";
+            } else {
+                feedbackElement.textContent = "Continuez à apprendre! La nutrition est un vaste sujet.";
+            }
+        }
+
+        function restartQuiz() {
+            resultsContainer.style.display = 'none';
+            welcomeScreen.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
