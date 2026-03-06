@@ -154,13 +154,16 @@ header nav {
 }
 
  
-   #menu_ul li,a {
+   #menu_ul li>a {
     text-decoration: none;
     list-style: none;
      color: antiquewhite;
       font-size: 1.3rem;
       transition:all 0.4s ease ; 
   }
+#menu_ul li{ text-decoration : none ; 
+            list-style:none ; 
+             transition:all 0.4s ease ; }
    #section0{
      height: 90vh;
      max-width: 100%;
@@ -638,5 +641,6 @@ mark{
   }
 
   
+
 
 
