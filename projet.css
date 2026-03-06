@@ -154,7 +154,7 @@ header nav {
 }
 
  
-  .menu1 ul li,a {
+   ul li,a {
     text-decoration: none;
     list-style: none;
      color: antiquewhite;
@@ -636,4 +636,5 @@ mark{
  } 
  
   }
+
   
